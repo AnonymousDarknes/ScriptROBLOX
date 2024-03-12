@@ -1036,6 +1036,7 @@ local function reanimate()
 	local enumMLCP=e.MouseBehavior.LockCurrentPosition
 	local enumMD=e.MouseBehavior.Default
 	local enumMW=e.UserInputType.MouseWheel
+	local enumMM=e.UserInputType.MouseMovement
 
 	local mouseBehavior=nil
 	local lastMouseBehavior=insGet(uis,"MouseBehavior")
@@ -1156,11 +1157,6 @@ local function reanimate()
 		elseif a==keySpace then
 			jumpingInput=false
 		end
-	end)
-	
-	local mouseCameraControl=not insGet(uis,"TouchEnabled")
-	Connect(GetPropertyChangedSignal(uis,"TouchEnabled"),function()
-		mouseCameraControl=not insGet(uis,"TouchEnabled")
 	end)
 	
 	local thumbstickEndX=0
@@ -1284,8 +1280,16 @@ local function reanimate()
 	Connect(GetPropertyChangedSignal(gs,"TopbarInset"),refreshTouchRegions)
 	refreshTouchRegions()
 	
+	local mouseCameraMove=false
 	Connect(insGet(uis,"InputChanged"),function(a,b)
-		if (not b) and (insGet(a,"UserInputType")==enumMW) then
+		if b then return end
+		local inputType=insGet(a,"UserInputType")
+		if mouseCameraMove and inputType==enumMM then
+			local rotation=GetMouseDelta(uis)*mradN05
+			camcfLV=cfGet(cfMul(camrot,angles(rotation.Y,rotation.X,0)),"LookVector")
+			camrot=cfl(v3_0,camcfLV)
+			camcfRV=cfGet(camrot,"RightVector")
+		elseif inputType==enumMW then
 			cammag=cammag+v3Get(insGet(a,"Position"),"Z")*(0.75-cammag/4)
 			if cammag<0 then
 				firstperson=false
@@ -1406,36 +1410,26 @@ local function reanimate()
 		deltaTime=min(delta*10,1)
 		lastsine=sine
 
-		if mouseCameraControl then
-			if shiftlock then
-				if allowshiftlock then
-					mouseBehavior=enumMLC
-					local rotation=GetMouseDelta(uis)*mradN05
-					camcfLV=cfGet(cfMul(camrot,angles(rotation.Y,rotation.X,0)),"LookVector")
-					camrot=cfl(v3_0,camcfLV)
-					camcfRV=cfGet(camrot,"RightVector")
-				else
-					shiftlock=false
-				end
-			elseif firstperson then
+		if shiftlock then
+			if allowshiftlock then
 				mouseBehavior=enumMLC
-				local rotation=GetMouseDelta(uis)*mradN05
-				camcfLV=cfGet(cfMul(camrot,angles(rotation.Y,rotation.X,0)),"LookVector")
-				camrot=cfl(v3_0,camcfLV)
-				camcfRV=cfGet(camrot,"RightVector")
-			elseif IsMouseButtonPressed(uis,enumMB2) then
-				mouseBehavior=enumMLCP
-				local rotation=GetMouseDelta(uis)*mradN05
-				camcfLV=cfGet(cfMul(camrot,angles(rotation.Y,rotation.X,0)),"LookVector")
-				camrot=cfl(v3_0,camcfLV)
-				camcfRV=cfGet(camrot,"RightVector")
+				mouseCameraMove=true
 			else
-				mouseBehavior=enumMD
+				shiftlock=false
 			end
-			if lastMouseBehavior~=mouseBehavior then
-				lastMouseBehavior=mouseBehavior
-				insSet(uis,"MouseBehavior",mouseBehavior)
-			end
+		elseif firstperson then
+			mouseBehavior=enumMLC
+			mouseCameraMove=true
+		elseif IsMouseButtonPressed(uis,enumMB2) then
+			mouseBehavior=enumMLCP
+			mouseCameraMove=true
+		else
+			mouseBehavior=enumMD
+			mouseCameraMove=false
+		end
+		if lastMouseBehavior~=mouseBehavior then
+			lastMouseBehavior=mouseBehavior
+			insSet(uis,"MouseBehavior",mouseBehavior)
 		end
 
 		local raycastresult=Raycast(ws,pos,v3_010*(fpdh-v3Get(pos,"Y")),raycastparams)
