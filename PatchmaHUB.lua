@@ -73,6 +73,7 @@ local v3_010=v3(0,1,0)
 local v3_001=v3(0,0,1)
 local cf_0=cf(0,0,0)
 local v3_xz=v3_101*10
+local v3_xzL=v3_101*250.1
 local v3_net=v3_010*25.01
 
 local function rs(l) 
@@ -212,10 +213,10 @@ local function timegp(p,n,c,t)
 end
 local function getNetlessVelocity(realVel)
 	--if true then return v3_0 end
-	--if true then return realPartVelocity end
+	--if true then return realVel end
 	--if true then return v3_net end
 	if v3Get(realVel,"Magnitude")>25.01 then
-		realVel=v3Get(realVel,"Unit")*25.01
+		return v3Get(realVel,"Unit")*v3_xzL+v3_net
 	end
 	return realVel*v3_xz+v3_net
 end
@@ -1440,7 +1441,7 @@ local function reanimate()
 			if onground then
 				Yvel=0
 				pos=pos+v3_010*(raycastresult+3-v3Get(pos,"Y"))*min(delta*20,1)
-				if jumpingInput then
+				if jumpingInput and (jumpPower>0) then
 					Yvel=jumpPower
 					onground=false
 				end
@@ -1466,6 +1467,8 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsIdle()
+						noYvelTime=min(noYvelTime+delta*0.3,1)
+						xzvel=xzvel*(1-noYvelTime)
 					elseif Yvel>0 then
 						pos=pos+v3_010*Yvel*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1473,6 +1476,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsJump()
+						noYvelTime=0
 					else
 						pos=pos+v3_010*Yvel*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1480,6 +1484,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsFall()
+						noYvelTime=0
 					end
 				else
 					xzvel=v3Get(v3Get(camcfLV*v3_101,"Unit")*FWmovement+v3Get(camcfRV*v3_101,"Unit")*RTmovement,"Unit")*walkSpeed
@@ -1490,6 +1495,8 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsWalk()
+						noYvelTime=min(noYvelTime+delta*0.3,1)
+						xzvel=xzvel*(1-noYvelTime)
 					elseif Yvel>0 then
 						pos=pos+(xzvel+v3_010*Yvel)*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1497,6 +1504,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsJump()
+						noYvelTime=0
 					else 
 						pos=pos+(xzvel+v3_010*Yvel)*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1504,6 +1512,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsFall()
+						noYvelTime=0
 					end
 				end
 			else
@@ -1514,6 +1523,8 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsIdle()
+					noYvelTime=min(noYvelTime+delta*0.3,1)
+					xzvel=xzvel*(1-noYvelTime)
 				elseif Yvel>0 then
 					pos=pos+v3_010*Yvel*delta
 					cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1521,6 +1532,7 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsJump()
+					noYvelTime=0
 				else
 					pos=pos+v3_010*Yvel*delta
 					cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1528,6 +1540,7 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsFall()
+					noYvelTime=0
 				end
 			end
 		elseif shiftlock then	
@@ -1540,6 +1553,8 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsIdle()
+						noYvelTime=min(noYvelTime+delta*0.3,1)
+						xzvel=xzvel*(1-noYvelTime)
 					elseif Yvel>0 then
 						pos=pos+v3_010*Yvel*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1547,6 +1562,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsJump()
+						noYvelTime=0
 					else
 						pos=pos+v3_010*Yvel*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1554,6 +1570,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsFall()
+						noYvelTime=0
 					end
 				else
 					xzvel=v3Get(v3Get(camcfLV*v3_101,"Unit")*FWmovement+v3Get(camcfRV*v3_101,"Unit")*RTmovement,"Unit")*walkSpeed
@@ -1564,6 +1581,8 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsWalk()
+						noYvelTime=min(noYvelTime+delta*0.3,1)
+						xzvel=xzvel*(1-noYvelTime)
 					elseif Yvel>0 then
 						pos=pos+(xzvel+v3_010*Yvel)*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1571,6 +1590,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsJump()
+						noYvelTime=0
 					else
 						pos=pos+(xzvel+v3_010*Yvel)*delta
 						cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1578,6 +1598,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsFall()
+						noYvelTime=0
 					end
 				end
 			else
@@ -1588,6 +1609,8 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsIdle()
+					noYvelTime=min(noYvelTime+delta*0.3,1)
+					xzvel=xzvel*(1-noYvelTime)
 				elseif Yvel>0 then
 					pos=pos+v3_010*Yvel*delta
 					cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1595,6 +1618,7 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsJump()
+					noYvelTime=0
 				else
 					pos=pos+v3_010*Yvel*delta
 					cfr=cfl(pos,pos+camcfLV*v3_101)
@@ -1602,6 +1626,7 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsFall()
+					noYvelTime=0
 				end
 			end
 		else
@@ -1614,6 +1639,8 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsIdle()
+						noYvelTime=min(noYvelTime+delta*0.3,1)
+						xzvel=xzvel*(1-noYvelTime)
 					elseif Yvel>0 then
 						pos=pos+v3_010*Yvel*delta
 						cfr=cfAdd(cfGet(cfr,"Rotation"),pos)
@@ -1621,6 +1648,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsJump()
+						noYvelTime=0
 					else
 						pos=pos+v3_010*Yvel*delta
 						cfr=cfAdd(cfGet(cfr,"Rotation"),pos)
@@ -1628,6 +1656,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsFall()
+						noYvelTime=0
 					end
 				else
 					xzvel=v3Get(v3Get(camcfLV*v3_101,"Unit")*FWmovement+v3Get(camcfRV*v3_101,"Unit")*RTmovement,"Unit")*walkSpeed
@@ -1638,6 +1667,8 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsWalk()
+						noYvelTime=min(noYvelTime+delta*0.3,1)
+						xzvel=xzvel*(1-noYvelTime)
 					elseif Yvel>0 then
 						pos=pos+(xzvel+(v3_010*Yvel))*delta
 						cfr=cfAdd(Lerp(cfGet(cfr,"Rotation"),cfl(v3_0,xzvel),deltaTime),pos)
@@ -1645,6 +1676,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsJump()
+						noYvelTime=0
 					else
 						pos=pos+(xzvel+(v3_010*Yvel))*delta
 						cfr=cfAdd(Lerp(cfGet(cfr,"Rotation"),cfl(v3_0,xzvel),deltaTime),pos)
@@ -1652,6 +1684,7 @@ local function reanimate()
 						cframes[rootpart]=cfr
 						insSet(cam,"CFrame",camcf)
 						lerpsFall()
+						noYvelTime=0
 					end
 				end
 			else
@@ -1662,6 +1695,8 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsIdle()
+					noYvelTime=min(noYvelTime+delta*0.3,1)
+					xzvel=xzvel*(1-noYvelTime)
 				elseif Yvel>0 then
 					pos=pos+v3_010*Yvel*delta
 					cfr=cfAdd(cfGet(cfr,"Rotation"),pos)
@@ -1669,6 +1704,7 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsJump()
+					noYvelTime=0
 				else
 					pos=pos+v3_010*Yvel*delta
 					cfr=cfAdd(cfGet(cfr,"Rotation"),pos)
@@ -1676,19 +1712,13 @@ local function reanimate()
 					cframes[rootpart]=cfr
 					insSet(cam,"CFrame",camcf)
 					lerpsFall()
+					noYvelTime=0
 				end
 			end
 		end
 
 		refreshjointsI(rootpart)
 		tclear(refreshedjoints)
-
-		if onground then
-			noYvelTime=min(noYvelTime+delta*0.3,1)
-			xzvel=xzvel*(1-noYvelTime)
-		else
-			noYvelTime=0
-		end
 
 		local idlerv=v3(sin((sine-0.0375)*16),sin(sine*16),sin((sine+0.075)*16))
 		local idleoff=idlerv*0.001
@@ -1708,14 +1738,13 @@ local function reanimate()
 					end
 					local lastpos=i.l
 					local vel=(cfGet(v,"Position")-lastpos)/delta
-					if v3Get(vel,"Magnitude")>speedlimit then
-						vel=v3Get(vel,"Unit")*speedlimit
-						v=cfAdd(v,(lastpos+vel*delta)-cfGet(v,"Position"))
-					end
-					i.l=cfGet(v,"Position")
 					if v3Get(vel,"Magnitude")<0.15 then
 						v=cfAdd(v,idleoff)
+					elseif v3Get(vel,"Magnitude")>speedlimit then
+						vel=v3Get(vel,"Unit")*speedlimit
+						v=cfAdd(cfGet(v,"Rotation"),lastpos+vel*delta)
 					end
+					i.l=cfGet(v,"Position")
 					local claimtime=i.c
 					if claimtime then
 						if sine-claimtime<retVelTime then
@@ -2837,14 +2866,15 @@ btn("good cop bad cop animations", function()
 	local RightHip=getJoint("Right Hip")
 	local LeftHip=getJoint("Left Hip")
 	local Neck=getJoint("Neck")
-	t.setWalkSpeed(20)
-
-	local ROOTC0 = angles(rad(-90), 0, rad(180))
-	local NECKC0 = cfMul(cf(0, 1, 0),angles(rad(-90), 0, rad(180)))
-	local RIGHTSHOULDERC0 = cfMul(cf(-0.5, 0, 0),angles(0, rad(90), 0))
-	local LEFTSHOULDERC0 = cfMul(cf(0.5, 0, 0),angles(0, rad(-90), 0))
-
-	local Animation_Speed = 0
+	local setWalkSpeed=t.setWalkSpeed
+	local setJumpPower=t.setJumpPower
+	setWalkSpeed(20)
+	setJumpPower(50)
+	
+	local ROOTC0=angles(rad(-90),0,rad(180))
+	local NECKC0=cfMul(cf(0,1,0),angles(rad(-90),0,rad(180)))
+	local RIGHTSHOULDERC0=cfMul(cf(-0.5,0,0),angles(0,rad(90),0))
+	local LEFTSHOULDERC0=cfMul(cf(0.5,0,0),angles(0,rad(-90),0))
 
 	--bruh yeah shackluster had a lot of math.rad(0) instead of just 0
 	--and a lot of multyplying by angles(0, 0, 0)
@@ -2852,37 +2882,27 @@ btn("good cop bad cop animations", function()
 	--and he had a sine value increasing by 2/3 each frame
 	--and a lot of variables with names saying other things
 	--and he had both C0 and C1 lerps for the same animations
-	local function C1lerps(iswalking)
-		Animation_Speed = 0.45/deltaTime
-
-		local sine = sine * 40
-		if iswalking then
-			RootJoint.C1 = Lerp(RootJoint.C1,cfMul(ROOTC0, cf(0, 0, 0.05 * cos(sine / (2.4)))), 2 * 1.25 / Animation_Speed)
-			Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 * 1.25 / Animation_Speed)
-			RightHip.C1 = Lerp(RightHip.C1,cfMul(cfMul(cf(0.5, 0.875 - 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, rad(90), 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
-			LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cfMul(cf(-0.5, 0.875 + 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, rad(-90), 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
-		else
-			RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
-			Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
-			RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
-			LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
-		end
-	end
 
 	local function jumplerps()
-		local sine = sine * 40
-		C1lerps()
+		local Animation_Speed = 0.45 / deltaTime
+		RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+		Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+		RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+		LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
 
 		RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0, 0.2 / Animation_Speed)
 		Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(rad(-20), 0, 0)), 0.2 / Animation_Speed)
 		RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(1.5, 0.5, 0),angles(rad(-40), 0, rad(20))), RIGHTSHOULDERC0), 0.2 / Animation_Speed)
 		LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-1.5, 0.5, 0),angles(rad(-40), 0, rad(-20))), LEFTSHOULDERC0), 0.2 / Animation_Speed)
 		RightHip.C0 = Lerp(RightHip.C0,cfMul(cf(1, -1, -0.3),angles(0, rad(90), 0),angles(rad(-5), 0, rad(-20))), 0.2 / Animation_Speed)
-		LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cf(-1, -1, -0.3),angles(0, rad(-90), 0),angles(rad(-5), 0, rad(20))), 0.2 / Animation_Speed)
+		LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cf(-1, -1, -0.3),angles(0, rad(-90), 0),angles(rad(-5), 0, rad(20))), 0.2 / Animation_Speed)	
 	end
 	local function falllerps()
-		local sine = sine * 40
-		C1lerps()
+		local Animation_Speed = 0.45 / deltaTime
+		RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+		Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+		RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+		LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
 
 		RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0, 0.2 / Animation_Speed)
 		Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(rad(20), 0, 0)), 0.2 / Animation_Speed)
@@ -2892,12 +2912,96 @@ btn("good cop bad cop animations", function()
 		LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cfMul(cf(-1, -1, 0),angles(0, rad(-90), 0)),angles(0, 0, rad(10))), 0.2 / Animation_Speed)
 	end
 
-	addmode("default", {
-		idle = function()
-			local sine = sine * 40
-			C1lerps()
+	local idleOverwrite=nil
 
-			RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0.05 * cos(sine / 12), 0, 0 + 0.05 * sin(sine / 12))), 0.15 / Animation_Speed)
+	addmode("default",{ --mode 1
+		modeLeft=function() --enter mode 0
+			setWalkSpeed(0)
+			setJumpPower(0)
+			idleOverwrite=function()
+				local sine = sine * 40
+				local Animation_Speed = 0.45 / deltaTime
+				RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+				RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+				LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
+				
+				RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+				Neck.C0 = Lerp(Neck.C0, NECKC0, 1 / Animation_Speed)
+				RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.5, 0.5, 0) * angles(0, 0, rad(25)) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+				LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.5, 0.5, 0) * angles(0, 0, rad(-25)) * LEFTSHOULDERC0, 1 / Animation_Speed)
+				RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(83), 0), 1 / Animation_Speed)
+				LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(-83), 0), 1 / Animation_Speed)
+			end
+			twait(0.15)
+			idleOverwrite=function()
+				local sine = sine * 40
+				local Animation_Speed = 0.45 / deltaTime
+				RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+				RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+				LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
+				
+				RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+				Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(rad(5), 0, 0), 1 / Animation_Speed)
+				RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.25, 0.5, -0.5) * angles(rad(100), 0, rad(-70)) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+				LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.25, 0.35, -0.35) * angles(rad(70), 0, rad(80)) * LEFTSHOULDERC0, 1 / Animation_Speed)
+				RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(83), 0), 1 / Animation_Speed)
+				LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(-83), 0), 1 / Animation_Speed)
+			end
+			twait(0.5)
+			--CreateSound(363808674, Torso, 6, 1, false)
+			idleOverwrite=function()
+				local sine = sine * 40
+				local Animation_Speed = 0.45 / deltaTime
+				RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+				RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+				LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
+				
+				RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+				Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(rad(5), rad(25), 0), 1 / Animation_Speed)
+				RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.25, 0.5, -0.5) * angles(rad(100), 0, rad(-50)) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+				LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.25, 0.35, -0.35) * angles(rad(70), 0, rad(60)) * LEFTSHOULDERC0, 1 / Animation_Speed)
+				RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(83), 0), 1 / Animation_Speed)
+				LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(-83), 0), 1 / Animation_Speed)
+			end
+			twait(0.3)
+			--CreateSound(363808674, Torso, 6, 1, false)
+			idleOverwrite=function()
+				local sine = sine * 40
+				local Animation_Speed = 0.45 / deltaTime
+				RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+				RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+				LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
+				
+				RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+				Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(rad(5), rad(-25), 0), 1 / Animation_Speed)
+				RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.25, 0.5, -0.5) * angles(rad(100), 0, rad(-90)) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+				LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.25, 0.35, -0.35) * angles(rad(70), 0, rad(90)) * LEFTSHOULDERC0, 1 / Animation_Speed)
+				RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(83), 0), 1 / Animation_Speed)
+				LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(-83), 0), 1 / Animation_Speed)
+			end
+			twait(0.3)
+			idleOverwrite=nil
+			setWalkSpeed(20)
+			setJumpPower(50)
+		end,
+		idle = function()
+			if idleOverwrite then 
+				return idleOverwrite()
+			end
+			
+			local Animation_Speed = 0.45 / deltaTime
+			local sine = sine * 40
+			
+			RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+			Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+			RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+			LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
+			
+			RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0.05 * cos(sine / 12), 0, 0.05 * sin(sine / 12))), 0.15 / Animation_Speed)
 			Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0, angles(rad(15 - 2.5 * sin(sine / 12)), 0, rad(-25))), 1 / Animation_Speed)
 			RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(1.25, 0.5, 0.3),angles(rad(-45), 0, rad(-45))), RIGHTSHOULDERC0), 1 / Animation_Speed)
 			LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-1.25, 0.5, 0.3),angles(rad(-40), 0, rad(45))), LEFTSHOULDERC0), 1 / Animation_Speed)
@@ -2905,9 +3009,13 @@ btn("good cop bad cop animations", function()
 			LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cfMul(cf(-1 + 0.05 * cos(sine / 12), -1 - 0.05 * sin(sine / 12), -0.01),angles(0, rad(-85), 0)),angles(rad(-1), 0, 0)), 0.15 / Animation_Speed)
 		end,
 		walk = function()
+			local Animation_Speed = 0.45 / deltaTime
 			local sine = sine * 40
-			C1lerps(true)
-
+			RootJoint.C1 = Lerp(RootJoint.C1,cfMul(ROOTC0, cf(0, 0, 0.05 * cos(sine / (2.4)))), 2 * 1.25 / Animation_Speed)
+			Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 * 1.25 / Animation_Speed)
+			RightHip.C1 = Lerp(RightHip.C1,cfMul(cfMul(cf(0.5, 0.875 - 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, rad(90), 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+			LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cfMul(cf(-0.5, 0.875 + 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, rad(-90), 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+			
 			RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0, 0, -0.05)), 0.15 / Animation_Speed)
 			Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(rad(5), 0, 0)), 0.15 / Animation_Speed)
 			RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(1.25, 0.5 + 0.05 * sin(sine / (2.4)), 0.3),angles(rad(-45), 0, rad(-45))), RIGHTSHOULDERC0), 1 / Animation_Speed)
@@ -2918,12 +3026,46 @@ btn("good cop bad cop animations", function()
 		jump = jumplerps,
 		fall = falllerps
 	})
-	addmode("f", {
-		idle = function()
-			local sine = sine * 40
-			C1lerps()
 
-			RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0, 0, 0 + 0.05 * cos(sine / 12))), 1 / Animation_Speed)
+	addmode("f",{ --mode 0
+		modeLeft=function() --enter mode 1
+			setWalkSpeed(0)
+			setJumpPower(0)
+			--CreateSound(147722227, Torso, 4, 1.3, false)
+			idleOverwrite=function()
+				local sine = sine * 40
+				local Animation_Speed = 0.45 / deltaTime
+				RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+				RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+				LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
+				
+				RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+				Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(rad(35), 0, 0), 1 / Animation_Speed)
+				RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.5, 0.5, 0) * angles(0, 0, rad(25)) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+				LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.5, 0.5, 0) * angles(0, 0, rad(-25)) * LEFTSHOULDERC0, 1 / Animation_Speed)
+				RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(83), 0), 1 / Animation_Speed)
+				LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, rad(-83), 0), 1 / Animation_Speed)
+			end
+			twait(0.15)
+			idleOverwrite=nil
+			setWalkSpeed(20)
+			setJumpPower(50)
+		end,
+		idle = function()
+			if idleOverwrite then 
+				return idleOverwrite()
+			end
+			
+			local Animation_Speed = 0.45 / deltaTime
+			local sine = sine * 40
+			
+			RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+			Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 / Animation_Speed)
+			RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, rad(90), 0)), 0.7 / Animation_Speed)
+			LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, rad(-90), 0)), 0.7 / Animation_Speed)
+			
+			RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0, 0, 0.05 * cos(sine / 12))), 1 / Animation_Speed)
 			Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(rad(-5 - 2.5 * cos(sine / 12)), 0, rad(25))), 1 / Animation_Speed)
 			RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(0.9, 0.5 + 0.05 * sin(sine / 12), -0.5),angles(rad(100), 0, rad(-70))), RIGHTSHOULDERC0), 1 / Animation_Speed)
 			LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-0.9, 0.25 + 0.05 * sin(sine / 12), -0.35),angles(rad(70), 0, rad(80))), LEFTSHOULDERC0), 1 / Animation_Speed)
@@ -2931,9 +3073,13 @@ btn("good cop bad cop animations", function()
 			LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cf(-1, -1 - 0.05 * cos(sine / 12), -0.01),angles(0, rad(-80), 0)), 1 / Animation_Speed)
 		end,
 		walk = function()
+			local Animation_Speed = 0.45 / deltaTime
 			local sine = sine * 40
-			C1lerps(true)
-
+			RootJoint.C1 = Lerp(RootJoint.C1,cfMul(ROOTC0, cf(0, 0, 0.05 * cos(sine / (2.4)))), 2 * 1.25 / Animation_Speed)
+			Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(rad(-90), 0, rad(180))), 0.2 * 1.25 / Animation_Speed)
+			RightHip.C1 = Lerp(RightHip.C1,cfMul(cfMul(cf(0.5, 0.875 - 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, rad(90), 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+			LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cfMul(cf(-0.5, 0.875 + 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, rad(-90), 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+			
 			RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0, 0, -0.05)), 0.15 / Animation_Speed)
 			Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(rad(5), 0, 0)), 0.15 / Animation_Speed)
 			RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(0.9, 0.5 + 0.05 * sin(sine / (2.4)), -0.5),angles(rad(100), 0, rad(-70))), RIGHTSHOULDERC0), 1 / Animation_Speed)
