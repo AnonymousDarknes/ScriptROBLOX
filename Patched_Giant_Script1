@@ -1,4 +1,6 @@
 --[[
+-easy way-
+loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymousDarknes/ScriptROBLOX/main/Patched_Giant_Script1"))()
 -How To Use-
 *Only works in R15 games*
 Set character to R15
